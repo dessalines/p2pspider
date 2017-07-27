@@ -69,6 +69,19 @@ p2p.on('metadata', function (metadata) {
     if (data.files) {
         for (var i = 0; i < data.files.length; i++) {
             console.log(data.files[i]);
+            var file = data.files[i];
+            var path = file.path.join("/");
+
+            const stmt2 = 'insert into file (info_hash, path, size_bytes, index_) values ($1, $2, $3, $4)';
+            const values2 = [metadata.infohash, path, file['length'], i];
+
+            client.query(stmt2, values2, (err, res) => {
+                if (err) {
+                    return console.log(err.stack);
+                } else {
+                    console.log(path + " has saved.");
+                }
+            });
         }
     }
 
