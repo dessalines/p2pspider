@@ -79,10 +79,21 @@ p2p.on('metadata', function (metadata) {
                 if (err) {
                     return console.log(err.stack);
                 } else {
-                    console.log(path + " has saved.");
+                    console.log(path + " file has saved.");
                 }
             });
         }
+    } else {
+        const stmt2 = 'insert into file (info_hash, path, size_bytes, index_) values ($1, $2, $3, $4)';
+        const values2 = [metadata.infohash, data.name, bytes, 0];
+
+        client.query(stmt2, values2, (err, res) => {
+            if (err) {
+                return console.log(err.stack);
+            } else {
+                console.log(data.name + " file has saved.");
+            }
+        });
     }
 
 });
