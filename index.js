@@ -53,6 +53,7 @@ p2p.on('metadata', function (metadata) {
     var bcode = bencode.encode({'info': metadata.info});
     var data = bencode.decode(bcode, 'utf8');
     console.log(data);
+    console.log(data.Dict.info.Dict.name);
     const stmt = 'insert into torrent (info_hash, name, size_bytes, age, bencode) values ($1, $2, $3, $4, $5)';
     const values = [bcode.infohash, bcode.name, bcode.size_bytes, bcode.age, bcode];
 
