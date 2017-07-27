@@ -28,7 +28,7 @@ p2p.ignore(function (infohash, rinfo, callback) {
     var values = [infohash, rinfo.address];
     client.query(stmt, values, (err, res) => {
         if (err) {
-            console.log(err.stack);
+            // console.log(err.stack);
         } else {
             console.log('Saving peer: ' + values);
         }
@@ -70,16 +70,16 @@ p2p.on('metadata', function (metadata) {
         for (var i = 0; i < data.files.length; i++) {
             console.log(data.files[i]);
             var file = data.files[i];
-            var path = file.path.join("/");
+            var filepath = data.name.concat(file.path.join("/"));
 
             const stmt2 = 'insert into file (info_hash, path, size_bytes, index_) values ($1, $2, $3, $4)';
-            const values2 = [metadata.infohash, path, file['length'], i];
+            const values2 = [metadata.infohash, filepath, file['length'], i];
 
             client.query(stmt2, values2, (err, res) => {
                 if (err) {
                     return console.log(err.stack);
                 } else {
-                    console.log(path + " file has saved.");
+                    console.log(filepath + " file has saved.");
                 }
             });
         }
