@@ -65,9 +65,13 @@ p2p.on('metadata', function (metadata) {
         }
     });
 
-    for (var i = 0; i < data.files.length; i++) {
-        console.log(data.files[i]);
+    // if its a multi-file torrent
+    if (data.files.length) {
+        for (var i = 0; i < data.files.length; i++) {
+            console.log(data.files[i]);
+        }
     }
+
 });
 
 p2p.listen(6881, '0.0.0.0');
