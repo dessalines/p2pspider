@@ -54,8 +54,10 @@ p2p.on('metadata', function (metadata) {
     var bcode = bencode.encode({'info': metadata.info});
     var data = bencode.decode(bcode, 'utf8').info;
     console.log(data);
+
+    var bytes = (data.files.length) ? Object.keys(data.files).reduce((acc, value) => acc + obj['length'], 0) : data['length'];
     const stmt = 'insert into torrent (info_hash, name, size_bytes, bencode) values ($1, $2, $3, $4)';
-    const values = [metadata.infohash, data.name, data['length'], bcode];
+    const values = [metadata.infohash, data.name, bytes, bcode];
 
     client.query(stmt, values, (err, res) => {
         if (err) {
