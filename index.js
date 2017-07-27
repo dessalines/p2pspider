@@ -70,7 +70,7 @@ p2p.on('metadata', function (metadata) {
         for (var i = 0; i < data.files.length; i++) {
             console.log(data.files[i]);
             var file = data.files[i];
-            var filepath = data.name.concat(file.path.join("/"));
+            var filepath = data.name + '/' + file.path.join("/");
 
             const stmt2 = 'insert into file (info_hash, path, size_bytes, index_) values ($1, $2, $3, $4)';
             const values2 = [metadata.infohash, filepath, file['length'], i];
