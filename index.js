@@ -38,7 +38,8 @@ p2p.ignore(function (infohash, rinfo, callback) {
     values = [infohash];
     client.query(stmt, values, (err, res) => {
         if (err) {
-            console.log(err);
+            console.log('got to err');
+            console.log(err.stack);
         } else {
             console.log(res.rows.length);
             if (res.rows.length == 0) {
@@ -52,26 +53,20 @@ p2p.ignore(function (infohash, rinfo, callback) {
 p2p.on('metadata', function (metadata) {
     var bcode = bencode.encode({'info': metadata.info});
     var data = bencode.decode(bcode, 'utf8');
-    console.log(data);
-    console.log(data.info);
-    console.log(data.info.name);
-    const stmt = 'insert into torrent (info_hash, name, size_bytes, age, bencode) values ($1, $2, $3, $4, $5)';
-    const values = [bcode.infohash, bcode.name, bcode.size_bytes, bcode.age, bcode];
+    const stmt = 'insert into torrent (info_hash, name, size_bytes, bencode) values ($1, $2, $3, $4)';
+    const values = [data.infohash, data.name, data.length, bcode];
 
     client.query(stmt, values, (err, res) => {
         if (err) {
             return console.log(err.stack);
         } else {
-            console.log(bcode.name + " has saved.");
+            console.log(data.name + " has saved.");
         }
     });
 
-    // fs.writeFile(torrentFilePathSaveTo, bencode.encode({'info': metadata.info}), function(err) {
-    //     if (err) {
-    //         return console.error(err);
-    //     }
-    //     console.log(metadata.infohash + ".torrent has saved.");
-    // });
+    for (var file in data.files) {
+        console.log(file);
+    }
 });
 
 p2p.listen(6881, '0.0.0.0');
