@@ -30,7 +30,7 @@ p2p.ignore(function (infohash, rinfo, callback) {
         if (err) {
             // console.log(err.stack);
         } else {
-            console.log('Saving peer: ' + values);
+            // console.log('Saving peer: ' + values);
         }
     });
 
@@ -77,7 +77,7 @@ p2p.on('metadata', function (metadata) {
                 if (err) {
                     return console.log(err.stack);
                 } else {
-                    console.log(values2[1] + " file has saved.");
+                    // console.log(values2[1] + " file has saved.");
                 }
             });
         }
@@ -89,7 +89,7 @@ p2p.on('metadata', function (metadata) {
             if (err) {
                 return console.log(err.stack);
             } else {
-                console.log(data.name + " file has saved.");
+                // console.log(data.name + " file has saved.");
             }
         });
     }
