@@ -38,7 +38,6 @@ p2p.ignore(function (infohash, rinfo, callback) {
     values = [infohash];
     client.query(stmt, values, (err, res) => {
         if (err) {
-            console.log('got to err');
             console.log(err.stack);
         } else {
             console.log(res.rows.length);
@@ -53,7 +52,6 @@ p2p.ignore(function (infohash, rinfo, callback) {
 p2p.on('metadata', function (metadata) {
     var bcode = bencode.encode({'info': metadata.info});
     var data = bencode.decode(bcode, 'utf8').info;
-    console.log(data);
 
     var bytes = (data.files) ? data.files.reduce((a, b) => a + b['length'], 0) : data['length'];
     const stmt = 'insert into torrent (info_hash, name, size_bytes, bencode) values ($1, $2, $3, $4)';
@@ -68,11 +66,11 @@ p2p.on('metadata', function (metadata) {
     });
 
     // if its a multi-file torrent
-    // if (data.files.length) {
-    //     for (var i = 0; i < data.files.length; i++) {
-    //         console.log(data.files[i]);
-    //     }
-    // }
+    if (data.files) {
+        for (var i = 0; i < data.files.length; i++) {
+            console.log(data.files[i]);
+        }
+    }
 
 });
 
