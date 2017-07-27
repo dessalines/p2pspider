@@ -1,5 +1,4 @@
 'use strict';
-var fs = require('fs');
 var path = require('path');
 
 var bencode = require('bencode');
@@ -11,46 +10,66 @@ var p2p = P2PSpider({
     timeout: 10000
 });
 
-var sqlite3 = require('sqlite3').verbose();
-var dbFile = path.join(__dirname, "peers.sqlite3");
-var db;
+const { Client } = require('pg')
 
-// Create the tables if the file doesn't exist
-fs.access(dbFile, fs.F_OK, function(err) {
-    db = new sqlite3.Database(dbFile);
-    if (err) {
-        db.serialize(function() {
-            db.run("create table peers (infohash varchar(40), peer varchar(40))");
-            db.run("create unique index peer_unique on peers(infohash, peer)");
-        });
-    }
+
+const client = new Client({
+  user: 'torfiles',
+  host: 'localhost',
+  database: 'torfiles',
+  password: 'asdf',
 });
 
+client.connect();
+
 p2p.ignore(function (infohash, rinfo, callback) {
-    var torrentFilePathSaveTo = path.join(__dirname, "torrents", infohash + ".torrent");
 
-    console.log('Saving peer for ' + infohash);
-    db.serialize(function() {
-        db.run("insert into peers (infohash, peer) values ('" + infohash + "','"  + rinfo.address + "')", function(err) {
-            if (err) {
-                console.error(err);
+    var stmt = 'insert into torrent_peer (info_hash, peer_address) values ($1, $2)';
+    var values = [infohash, rinfo.address];
+    client.query(stmt, values, (err, res) => {
+        if (err) {
+            console.log(err.stack);
+        } else {
+            console.log('Saving peer: ' + values);
+        }
+    });
+
+    stmt = 'select * from torrent where info_hash = $1';
+    values = [infohash];
+    client.query(stmt, values, (err, res) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(res.rows.length);
+            if (res.rows.length == 0) {
+                callback(false);
             }
-        });
+        }
     });
 
-    fs.exists(torrentFilePathSaveTo, function(exists) {
-        callback(exists); //if is not exists, download the metadata.
-    });
 });
 
 p2p.on('metadata', function (metadata) {
-    var torrentFilePathSaveTo = path.join(__dirname, "torrents", metadata.infohash + ".torrent");
-    fs.writeFile(torrentFilePathSaveTo, bencode.encode({'info': metadata.info}), function(err) {
+    var bcode = bencode.encode({'info': metadata.info});
+
+    console.log(bcode);
+    const stmt = 'insert into torrent (info_hash, name, size_bytes, age, bencode) values ($1, $2, $3, $4, $5)';
+    const values = [bcode.infohash, bcode.name, bcode.size_bytes, bcode.age, bcode];
+
+    client.query(stmt, values, (err, res) => {
         if (err) {
-            return console.error(err);
+            return console.log(err.stack);
+        } else {
+            console.log(bcode.name + " has saved.");
         }
-        console.log(metadata.infohash + ".torrent has saved.");
     });
+
+    // fs.writeFile(torrentFilePathSaveTo, bencode.encode({'info': metadata.info}), function(err) {
+    //     if (err) {
+    //         return console.error(err);
+    //     }
+    //     console.log(metadata.infohash + ".torrent has saved.");
+    // });
 });
 
 p2p.listen(6881, '0.0.0.0');
