@@ -40,7 +40,6 @@ p2p.ignore(function (infohash, rinfo, callback) {
         if (err) {
             console.log(err.stack);
         } else {
-            console.log(res.rows.length);
             if (res.rows.length == 0) {
                 callback(false);
             }
@@ -68,7 +67,6 @@ p2p.on('metadata', function (metadata) {
     // if its a multi-file torrent
     if (data.files) {
         for (var i = 0; i < data.files.length; i++) {
-            console.log(data.files[i]);
             var file = data.files[i];
             var filepath = data.name + '/' + file.path.join("/");
 
@@ -79,7 +77,7 @@ p2p.on('metadata', function (metadata) {
                 if (err) {
                     return console.log(err.stack);
                 } else {
-                    console.log(filepath + " file has saved.");
+                    console.log(values2[1] + " file has saved.");
                 }
             });
         }
