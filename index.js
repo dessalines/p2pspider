@@ -24,26 +24,26 @@ client.connect();
 
 p2p.ignore(function (infohash, rinfo, callback) {
 
-    var stmt = 'select * from torrent where info_hash = $1';
-    var values = [infohash];
-    client.query(stmt, values, (err, res) => {
-        if (err) {
-            console.log(err.stack);
-        } else {
-            if (res.rows.length != 0) {
-                console.log('info_hash ' + infohash + ' already exists.');
-                return;
-            }
-        }
-    });
-
-    stmt = 'insert into torrent_peer (info_hash, peer_address) values ($1, $2)';
-    values = [infohash, rinfo.address];
+    var stmt = 'insert into torrent_peer (info_hash, peer_address) values ($1, $2)';
+    var values = [infohash, rinfo.address];
     client.query(stmt, values, (err, res) => {
         if (err) {
             // console.log(err.stack);
         } else {
             // console.log('Saving peer: ' + values);
+        }
+    });
+
+    stmt = 'select * from torrent where info_hash = $1';
+    values = [infohash];
+    client.query(stmt, values, (err, res) => {
+        if (err) {
+            console.log(err.stack);
+        } else {
+            if (res.rows.length != 0) {
+                //console.log('info_hash ' + infohash + ' already exists.');
+                return;
+            }
         }
     });
 
