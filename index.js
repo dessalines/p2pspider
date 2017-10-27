@@ -41,7 +41,7 @@ p2p.ignore(function (infohash, rinfo, callback) {
             console.log(err.stack);
         } else {
             if (res.rows.length == 0) {
-                callback(false);
+                callback(exists);
             }
         }
     });
