@@ -31,7 +31,7 @@ p2p.ignore(function (infohash, rinfo, callback) {
             console.log(err.stack);
         } else {
             if (res.rows.length != 0) {
-                console.log('info_hash already exists.');
+                console.log('info_hash ' + infohash + ' already exists.');
                 return;
             }
         }
