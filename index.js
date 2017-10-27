@@ -40,9 +40,9 @@ p2p.ignore(function (infohash, rinfo, callback) {
         if (err) {
             console.log(err.stack);
         } else {
-            if (res.rows.length != 0) {
+            if (res.rows.length == 0) {
+                callback(false);
                 //console.log('info_hash ' + infohash + ' already exists.');
-                return;
             }
         }
     });
